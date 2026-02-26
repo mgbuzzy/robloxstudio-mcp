@@ -1045,6 +1045,9 @@ export class RobloxStudioTools {
           );
         }
         const [tupleModelKey, tuplePosition, tupleRotation] = placement;
+        if (typeof tupleModelKey !== 'string' || tupleModelKey.trim() === '') {
+          throw new Error(`Invalid sceneData.place[${placementIndex}][0]: model key must be a non-empty string`);
+        }
         modelKey = tupleModelKey;
         if (!isVec3Tuple(tuplePosition)) {
           throw new Error(`Invalid sceneData.place[${placementIndex}][1]: position must be a numeric [x,y,z] tuple`);
@@ -1081,10 +1084,6 @@ export class RobloxStudioTools {
         throw new Error(
           `Invalid sceneData.place[${placementIndex}]: expected an object placement or [modelKey, [x,y,z], [rotX?,rotY?,rotZ?]] tuple`
         );
-      }
-
-      if (typeof modelKey !== 'string' || modelKey.trim() === '') {
-        throw new Error(`Invalid sceneData.place[${placementIndex}][0]: model key must be a non-empty string`);
       }
 
       const buildId = modelMap[modelKey];
