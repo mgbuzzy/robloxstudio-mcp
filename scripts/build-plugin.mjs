@@ -174,7 +174,11 @@ const pluginsDir = process.platform === 'win32'
   ? join(process.env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local'), 'Roblox', 'Plugins')
   : join(homedir(), 'Documents', 'Roblox', 'Plugins');
 if (existsSync(pluginsDir)) {
-  const installPath = join(pluginsDir, 'MCPPlugin.rbxmx');
-  copyFileSync(outputPath, installPath);
-  console.log(`Installed to ${installPath}`);
+  try {
+    const installPath = join(pluginsDir, 'MCPPlugin.rbxmx');
+    copyFileSync(outputPath, installPath);
+    console.log(`Installed to ${installPath}`);
+  } catch (err) {
+    console.warn(`Could not copy to plugins folder: ${err.message}`);
+  }
 }

@@ -1289,8 +1289,12 @@ export class RobloxStudioTools {
       };
     }
 
-    const rgbaBuffer = Buffer.from(response.data!, 'base64');
-    const pngBuffer = rgbaToPng(rgbaBuffer, response.width!, response.height!);
+    if (!response.data || !response.width || !response.height) {
+      throw new Error('Screenshot response missing data, width, or height');
+    }
+
+    const rgbaBuffer = Buffer.from(response.data, 'base64');
+    const pngBuffer = rgbaToPng(rgbaBuffer, response.width, response.height);
 
     return {
       content: [{

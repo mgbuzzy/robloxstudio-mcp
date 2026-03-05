@@ -1333,7 +1333,7 @@ return {
             <string name="Source"><![CDATA[-- Compiled with roblox-ts v3.0.0
 local CaptureService = game:GetService("CaptureService")
 local AssetService = game:GetService("AssetService")
-local MAX_TILE_SIZE = 1023
+local MAX_TILE_SIZE = 1024
 local BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 local function encodeBase64(buf)
 	local len = buffer.len(buf)

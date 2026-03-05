@@ -7,6 +7,7 @@ import { IncomingMessage } from 'http';
 const REPO = 'boshyxd/robloxstudio-mcp';
 const ASSET_NAME = 'MCPPlugin.rbxmx';
 const TIMEOUT_MS = 30_000;
+const MAX_REDIRECTS = 5;
 
 function getPluginsFolder(): string {
   if (process.platform === 'win32') {
@@ -23,13 +24,14 @@ function httpsGet(url: string): Promise<IncomingMessage> {
   });
 }
 
-async function download(url: string, dest: string): Promise<void> {
+async function download(url: string, dest: string, redirects = 0): Promise<void> {
   const res = await httpsGet(url);
 
   if (res.statusCode === 301 || res.statusCode === 302) {
+    if (redirects >= MAX_REDIRECTS) throw new Error(`Too many redirects (max ${MAX_REDIRECTS})`);
     const location = res.headers.location;
     if (!location) throw new Error('Redirect with no location header');
-    return download(location, dest);
+    return download(location, dest, redirects + 1);
   }
 
   if (res.statusCode !== 200) {
@@ -39,9 +41,10 @@ async function download(url: string, dest: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const file = createWriteStream(dest);
     const cleanup = (err: Error) => {
-      file.close();
-      try { unlinkSync(dest); } catch { /* already gone */ }
-      reject(err);
+      file.close(() => {
+        try { unlinkSync(dest); } catch { /* already gone */ }
+        reject(err);
+      });
     };
     res.pipe(file);
     file.on('finish', () => { file.close(); resolve(); });
@@ -59,6 +62,10 @@ export async function installPlugin(): Promise<void> {
 
   console.log('Fetching latest release...');
   const res = await httpsGet(`https://api.github.com/repos/${REPO}/releases/latest`);
+
+  if (res.statusCode !== 200) {
+    throw new Error(`GitHub API returned HTTP ${res.statusCode}`);
+  }
 
   const chunks: Buffer[] = [];
   for await (const chunk of res) {
