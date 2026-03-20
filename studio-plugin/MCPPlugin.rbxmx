@@ -5347,11 +5347,7 @@ local function joinLines(lines, hadTrailingNewline)
 end
 local function readScriptSource(instance)
 	local ok, result = pcall(function()
-		local doc = ScriptEditorService:FindScriptDocument(instance)
-		if doc then
-			return doc:GetText()
-		end
-		return nil
+		return ScriptEditorService:GetEditorSource(instance)
 	end)
 	local _value = ok and result
 	if _value ~= "" and _value then

@@ -84,11 +84,7 @@ function joinLines(lines: string[], hadTrailingNewline: boolean): string {
 
 function readScriptSource(instance: LuaSourceContainer): string {
 	const [ok, result] = pcall(() => {
-		const doc = ScriptEditorService.FindScriptDocument(instance);
-		if (doc) {
-			return doc.GetText();
-		}
-		return undefined;
+		return ScriptEditorService.GetEditorSource(instance);
 	});
 	if (ok && result) {
 		return result;
